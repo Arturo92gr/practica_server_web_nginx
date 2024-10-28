@@ -18,5 +18,9 @@ Vagrant.configure("2") do |config|
     ln -s /etc/nginx/sites-available/nginx_server /etc/nginx/sites-enabled
     systemctl restart nginx
   SHELL
-
+  config.vm.provision "shell", inline: <<-SHELL
+    apt-get update
+    apt-get install -y vsftpd
+    mkdir /home/vagrant/ftp
+  SHELL
 end
