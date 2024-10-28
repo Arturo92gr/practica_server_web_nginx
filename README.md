@@ -8,9 +8,16 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
     En Windows está en el siguiente directorio:  
     `C:\Windows\System32\drivers\etc\hosts`  
     Se añade la línea:  
-    `192.168.0.2 nginx_server`  
+    `192.168.0.2 nginx_server.es`  
 
-2. Instalar vsftpd
+2. Instalar vsftpd. Se pedirán los siguientes datos:  
+    `If you enter '.', the field will be left blank.`  
+    `Country Name (2 letter code) [AU]:`  
+    `State or Province Name (full name) [Some-State]:`  
+    `Locality Name (eg, city) []:`  
+    `Organization Name (eg, company) [Internet Widgits Pty Ltd]:`  
+    `Organizational Unit Name (eg, section) []:`  
+    `Common Name (e.g. server FQDN or YOUR name) []:`  
 
 3. Crear certificados de seguridad:  
     `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.cr`
