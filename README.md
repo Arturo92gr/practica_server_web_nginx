@@ -16,14 +16,14 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
     `sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.cr`
 
 4. En vsftpd.conf:
-    - Borrar líneas:
-        <code>
+    - Borrar líneas:  
+
             rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
             rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
             ssl_enable=NO
-        </code>
-    - En su lugar añadir líneas:
-        <code>
+
+    - En su lugar añadir líneas:  
+
             rsa_cert_file=/etc/ssl/certs/vsftpd.crt
             rsa_private_key_file=/etc/ssl/private/vsftpd.key
             ssl_enable=YES
@@ -37,7 +37,6 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
             ssl_ciphers=HIGH
 
             local_root=/home/vagrant/ftp
-        </code>
 
-5. Reiniciar el servicio:
+5. Reiniciar el servicio:  
     `sudo systemctl restart vsftpd`
