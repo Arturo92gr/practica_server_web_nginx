@@ -22,8 +22,7 @@ Vagrant.configure("2") do |config|
     apt-get update
     apt-get install -y vsftpd
     mkdir /home/vagrant/ftp
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
-    cp -v /vagrant/vsftpd.conf /etc/
-    systemctl restart vsftpd
+    chown vagrant:vagrant /home/vagrant/ftp
+    chmod -R 755 /home/vagrant/ftp
   SHELL
 end
