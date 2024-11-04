@@ -5,7 +5,6 @@ Vagrant.configure("2") do |config|
   config.vm.box = "debian/bookworm64"
   config.vm.network "forwarded_port", guest: 80, host: 8081
   config.vm.network "private_network", ip: "192.168.0.2"
-  #config.vm.synced_folder "html_docs", "/var/www/html_docs"
   config.vm.provision "shell", inline: <<-SHELL
     apt-get update
     apt-get install -y nginx git
