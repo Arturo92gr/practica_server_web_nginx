@@ -1,6 +1,17 @@
 # Servidor Web con Nginx
 ### Práctica: Instalación y configuración de servidor web Nginx
 
+<br>
+
+## Contenidos
+- [FTP](#ftp)
+- [Conectar mediant FTPES y transferir archivos](#conectar-mediant-ftpes-y-transferir-archivos)
+- [Cuestiones finales](#cuestiones-finales)
+
+<br>
+
+## FTP
+
 Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con los siguientes pasos:
 
 1. Al no tener dns, se asocia la dirección IP a la web en el host Windows.  
@@ -55,46 +66,46 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
 
             write_enable=YES
 
-    - Verificar que las rutas del certificado y la clave privada sean correctas:
+5. Verificar que las rutas del certificado y la clave privada sean correctas:
 
             ls -l /etc/ssl/certs/vsftpd.crt /etc/ssl/private/vsftpd.key
 
-    - Es posible que haya que ajustar los permisos de la clave privada:
+6. Es posible que haya que ajustar los permisos para acceder a la clave privada:
 
             sudo chmod 755 /etc/ssl/private
 
-5. Reiniciar el servicio:
+7. Reiniciar el servicio:
 
         sudo systemctl restart vsftpd
 
-6. Comprobar que está funcionando correctamente:
+8. Comprobar que está funcionando correctamente:
     
         sudo systemctl status vsftpd
 
 <br>
 
-### Conectar mediant FTPES
+## Conectar mediant FTPES y transferir archivos
 
 En este caso se ha utilizado el programa <a href="https://winscp.net/eng/download.php">WinSCP</a>.
 
-Para poder conectar se requiere una contraseña de usuario, la cual no tenemos si estamos en nuestra máquina vagrant. Por ello se ha creado y asignado una nueva contraseña al usuario vagrant con `sudo passwd vagrant`.
+Para poder conectar se requiere una contraseña de usuario, la cual no tenemos si estamos en una máquina vagrant. Por ello se debe crear y asignar una nueva contraseña al usuario vagrant con `sudo passwd vagrant`.
 
 <img src="./htdocs/1.png">
 
 <br>
 
-Tras conectar, se transfieren los archivos de nuestra web al directorio ftp del servidor:
+Tras conectar, se transfieren los archivos de nuestro sitio web al directorio ftp del servidor:
 
 <img src="./htdocs/2.png">
 
 <br>
 
-### Configuración del nuevo dominio y sitio web
+## Configuración del nuevo dominio y sitio web
 
 De vuelta al servidor, primeramente se debe se eliminar el enlace simbólico de cualquier otra web en sites-enabled:  
     `sudo rm /etc/nginx/sites-enabled/nginx_server`
 
-Tras esto, se vuelven a realizar todos los pasos que se han llevado a cabo inicialmente, pero esta vez, para configurar el nuevo dominio del sitio web que se ha transferido:
+Tras esto, se vuelven a realizar todos los pasos que se han llevado a cabo inicialmente (en Vagrantfile), pero esta vez, para configurar el nuevo dominio del sitio web que se ha transferido:
 
     sudo mkdir -p /var/www/foo_fighters/html
 
@@ -134,3 +145,23 @@ Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina vi
 Resultado final:
 
 <img src="./htdocs/3.png">
+
+<br>
+
+## Cuestiones finales
+
+**¿Qué pasa si no hago el link simbólico entre sites-available y sites-enabled de mi sitio web?**
+
+Nginx solo carga y utiliza las configuraciones de los sitios que están en sites-enabled.
+
+Si no se crea el enlace simbólico, Nginx no accederá a la configuración del sitio web en sites-enabled, por lo que este no estará disponible en el servidor. La web no se cargará, y cualquier intento de acceso devolverá un error o será redirigido a la dirección por defecto que viene indicada por el archivo "default", si es que sigue activo.
+
+Es como si el archivo de configuración del sitio no existiera para Nginx.
+
+**¿Qué pasa si no le doy los permisos adecuados a /var/www/nombre_web?**
+
+Nginx no podrá leer los archivos o directorios necesarios para servir el contenido de la web.
+
+Por un lado, son necesarios permisos de lectura para el usuario www-data. Si no tiene permisos de lectura, Nginx no podrá acceder al contenido y devolverá un error al intentar acceder a la web. Como solución, hay que asegurarse de que el propietario y el grupo sean www-data.
+
+Por otro lado, también son necesarios permisos de ejecución (x) en directorios, ya que si estos permisos faltan, Nginx no podrá navegar por los directorios y no encontrará los archivos de la web. Para evitar estos problemas, normalmente se establecen permisos 755 para los directorios.
