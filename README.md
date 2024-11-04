@@ -71,6 +71,8 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
     
         sudo systemctl status vsftpd
 
+<br>
+
 ### Conectar mediant FTPES
 
 En este caso se ha utilizado el programa <a href="https://winscp.net/eng/download.php">WinSCP</a>.
@@ -86,6 +88,8 @@ Tras conectar, se transfieren los archivos de nuestra web al directorio ftp del 
 <img src="./htdocs/2.png">
 
 <br>
+
+### Configuración del nuevo dominio y sitio web
 
 De vuelta al servidor, primeramente se debe se eliminar el enlace simbólico de cualquier otra web en sites-enabled:  
     `sudo rm /etc/nginx/sites-enabled/nginx_server`
@@ -126,5 +130,7 @@ Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina vi
     `192.168.0.2 foo_fighters`
 
 <br>
+
+Resultado final:
 
 <img src="./htdocs/3.png">
