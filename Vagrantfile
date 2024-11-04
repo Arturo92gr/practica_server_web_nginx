@@ -15,6 +15,7 @@ Vagrant.configure("2") do |config|
     chmod -R 755 /var/www/nginx_server
     cp -v /vagrant/nginx_server /etc/nginx/sites-available/
     ln -s /etc/nginx/sites-available/nginx_server /etc/nginx/sites-enabled
+    rm /etc/nginx/sites-enabled/default
     systemctl restart nginx
   SHELL
   config.vm.provision "shell", inline: <<-SHELL

@@ -8,7 +8,10 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
     En Windows está en el siguiente directorio:  
     `C:\Windows\System32\drivers\etc\hosts`  
     Se añade la línea:  
-    `192.168.0.2 nginx_server.es`  
+    `192.168.0.2 nginx_server`  
+    Una vez hecho esto, se puede comprobar que las peticiones se están realizando correctamente accediendo los archivos de logs:  
+    `/var/log/nginx/access.log`  
+    `/var/log/nginx/error.log`
 
 2. Instalar vsftpd. Se pedirán los siguientes datos:  
 
@@ -81,3 +84,47 @@ Para poder conectar se requiere una contraseña de usuario, la cual no tenemos s
 Tras conectar, se transfieren los archivos de nuestra web al directorio ftp del servidor:
 
 <img src="./htdocs/2.png">
+
+<br>
+
+De vuelta al servidor, primeramente se debe se eliminar el enlace simbólico de cualquier otra web en sites-enabled:  
+    `sudo rm /etc/nginx/sites-enabled/nginx_server`
+
+Tras esto, se vuelven a realizar todos los pasos que se han llevado a cabo inicialmente, pero esta vez, para configurar el nuevo dominio del sitio web que se ha transferido:
+
+    sudo mkdir -p /var/www/foo_fighters/html
+
+    sudo cp -r /home/vagrant/ftp/* /var/www/foo_fighters/html
+
+    sudo chown -R www-data:www-data /var/www/foo_fighters/html
+
+    sudo chmod -R 755 /var/www/foo_fighters
+
+    sudo nano /etc/nginx/sites-available/foo_fighters
+
+        server {
+            listen 80;
+            listen [::]:80;
+            root /var/www/foo_fighters/html;
+            index index.html index.htm index.nginx-debian.html;
+            server_name foo_fighters;
+            location / {
+                try_files $uri $uri/ =404;
+            }
+        }
+
+    sudo ln -s /etc/nginx/sites-available/foo_fighters /etc/nginx/sites-enabled/
+
+    sudo systemctl restart nginx
+
+<br>
+
+Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina virtual a nginx_server.  
+    En Windows está en el siguiente directorio:  
+    `C:\Windows\System32\drivers\etc\hosts`  
+    Se cambia la asociación inicial:  
+    `192.168.0.2 foo_fighters`
+
+<br>
+
+<img src="./htdocs/3.png">
