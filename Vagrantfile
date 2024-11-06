@@ -19,10 +19,25 @@ Vagrant.configure("2") do |config|
     systemctl restart nginx
   SHELL
   config.vm.provision "shell", inline: <<-SHELL
-    apt-get update
-    apt-get install -y vsftpd
     mkdir /home/vagrant/ftp
     chown vagrant:vagrant /home/vagrant/ftp
     chmod -R 755 /home/vagrant/ftp
+    apt-get update
+    apt-get install -y vsftpd
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
+    cp -v /vagrant/vsftpd.conf /etc/
+    sudo chmod 755 /etc/ssl/private
+    sudo systemctl restart vsftpd
+  SHELL
+  # Una vez se haya transferido el contenido del sitio web al servidor mediante FTPES, se haría la siguiente provisión:
+  config.vm.provision "shell", name: "foo_fighters", inline: <<-SHELL
+    sudo rm /etc/nginx/sites-enabled/nginx_server
+    sudo mkdir -p /var/www/foo_fighters/html
+    sudo cp -r /home/vagrant/ftp/* /var/www/foo_fighters/html
+    sudo chown -R www-data:www-data /var/www/foo_fighters/html
+    sudo chmod -R 755 /var/www/foo_fighters
+    cp -v /vagrant/foo_fighters /etc/nginx/sites-available/
+    sudo ln -s /etc/nginx/sites-available/foo_fighters /etc/nginx/sites-enabled/
+    sudo systemctl restart nginx
   SHELL
 end

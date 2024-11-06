@@ -68,11 +68,11 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
 
 5. Verificar que las rutas del certificado y la clave privada sean correctas:
 
-            ls -l /etc/ssl/certs/vsftpd.crt /etc/ssl/private/vsftpd.key
+        ls -l /etc/ssl/certs/vsftpd.crt /etc/ssl/private/vsftpd.key
 
 6. Es posible que haya que ajustar los permisos para acceder a la clave privada:
 
-            sudo chmod 755 /etc/ssl/private
+        sudo chmod 755 /etc/ssl/private
 
 7. Reiniciar el servicio:
 
