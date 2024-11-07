@@ -10,6 +10,15 @@
 
 <br>
 
+### Nota:
+Al ejecutar `vagrant up` con el Vagrantfile que se está suministrando en este repositorio, se llevarán a cabo sólamente las dos primeras provisiones, obviando la provisión con name "foo_fighters", ya que el servidor se está creando y no tiene aun el contenido de dicha web, que tendrá que ser transferido posteriormente mediante conexión FTPES.
+
+Una vez transferido el contenido del sitio web al servidor, se podrá ejecutar esa provisión específica:
+
+        vagrant provision --provision-with foo_fighters
+
+<br>
+
 ## FTP
 
 Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con los siguientes pasos:
@@ -90,6 +99,12 @@ En este caso se ha utilizado el programa <a href="https://winscp.net/eng/downloa
 
 Para poder conectar se requiere una contraseña de usuario, la cual no tenemos si estamos en una máquina vagrant. Por ello se debe crear y asignar una nueva contraseña al usuario vagrant con `sudo passwd vagrant`.
 
+En este caso, la asignación de la nueva contraseña al usuario vagrant se ha realizado en una provisión específica en Vagrantfile:
+
+        config.vm.provision "shell", name: "set_password", inline: <<-SHELL
+                echo "vagrant:vagrant" | sudo chpasswd
+        SHELL
+
 <img src="./htdocs/1.png">
 
 <br>
@@ -147,6 +162,8 @@ Resultado final:
 <img src="./htdocs/3.png">
 
 <br>
+
+
 
 ## Cuestiones finales
 
