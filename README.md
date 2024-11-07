@@ -44,9 +44,11 @@ Tras instalar y configurar Nginx, como se puede ver en Vagrantfile, se sigue con
         Organizational Unit Name (eg, section) []:  
         Common Name (e.g. server FQDN or YOUR name) []:  
 
-3. Crear certificados de seguridad:  
+3. Crear certificados de seguridad:
 
         sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt
+
+- En la provisión de Vagrantfile, al comando se le añade el parámetro `-subj "/C=ES/ST=./L=./O=./OU=./CN=nginx_server/emailAddress=.` para proporcionar todos los datos y evitar que el comando sea interactivo.
 
 4. En /etc/vsftpd.conf:
     - Borrar líneas:  
