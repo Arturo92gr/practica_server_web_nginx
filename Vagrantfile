@@ -29,18 +29,18 @@ Vagrant.configure("2") do |config|
     apt-get install -y vsftpd
     openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/vsftpd.key -out /etc/ssl/certs/vsftpd.crt -subj "/C=ES/ST=./L=./O=./OU=./CN=nginx_server/emailAddress=."
     cp -v /vagrant/vsftpd.conf /etc/
-    sudo chmod 755 /etc/ssl/private
-    sudo systemctl restart vsftpd
+    chmod 755 /etc/ssl/private
+    systemctl restart vsftpd
   SHELL
   # Una vez se haya transferido el contenido del sitio web al servidor mediante FTPES, se podrá hacer la siguiente provisión:
   config.vm.provision "shell", name: "foo_fighters", run: "never", inline: <<-SHELL
-    sudo rm /etc/nginx/sites-enabled/nginx_server
-    sudo mkdir -p /var/www/foo_fighters/html
-    sudo cp -r /home/vagrant/ftp/* /var/www/foo_fighters/html
-    sudo chown -R www-data:www-data /var/www/foo_fighters/html
-    sudo chmod -R 755 /var/www/foo_fighters
+    rm /etc/nginx/sites-enabled/nginx_server
+    mkdir -p /var/www/foo_fighters/html
+    cp -r /home/vagrant/ftp/* /var/www/foo_fighters/html
+    chown -R www-data:www-data /var/www/foo_fighters/html
+    chmod -R 755 /var/www/foo_fighters
     cp -v /vagrant/foo_fighters /etc/nginx/sites-available/
-    sudo ln -s /etc/nginx/sites-available/foo_fighters /etc/nginx/sites-enabled/
-    sudo systemctl restart nginx
+    ln -s /etc/nginx/sites-available/foo_fighters /etc/nginx/sites-enabled/
+    systemctl restart nginx
   SHELL
 end
