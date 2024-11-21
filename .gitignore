@@ -1,2 +1,5 @@
 # Vagrant machines
 .vagrant/
+
+# Directorio de sitios webs
+webs/

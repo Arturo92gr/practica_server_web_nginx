@@ -7,6 +7,7 @@
 - [FTP](#ftp)
 - [Conectar mediant FTPES y transferir archivos](#conectar-mediant-ftpes-y-transferir-archivos)
 - [Cuestiones finales](#cuestiones-finales)
+- [Autentificación](#autentificación)
 
 <br>
 
@@ -15,7 +16,7 @@ Al ejecutar `vagrant up` con el Vagrantfile que se está suministrando en este r
 
 Una vez transferido el contenido del sitio web al servidor, se podrá ejecutar esa provisión específica:
 
-        vagrant provision --provision-with foo_fighters
+        vagrant provision --provision-with nombreProvision
 
 <br>
 
@@ -184,3 +185,43 @@ Nginx no podrá leer los archivos o directorios necesarios para servir el conten
 Por un lado, son necesarios permisos de lectura para el usuario www-data. Si no tiene permisos de lectura, Nginx no podrá acceder al contenido y devolverá un error al intentar acceder a la web. Como solución, hay que asegurarse de que el propietario y el grupo sean www-data.
 
 Por otro lado, también son necesarios permisos de ejecución (x) en directorios, ya que si estos permisos faltan, Nginx no podrá navegar por los directorios y no encontrará los archivos de la web. Para evitar estos problemas, normalmente se establecen permisos 755 para los directorios.
+
+
+## Autentificación
+
+`dpkg -l | grep openssl`
+
+```bash
+sudo sh -c "echo -n 'nombre:' >> /etc/nginx/.htpasswd"
+
+sudo sh -c "openssl passwd -apr1 >> /etc/nginx/.htpasswd"
+
+cat /etc/nginx/.htpasswd
+```
+
+`sudo nano /etc/nginx/sites-available/perfect_learn`
+
+```bash
+server {
+        listen 80;
+        listen [::]:80;
+        root /var/www/perfect_learn/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name perfect_learn;
+        location / {
+                auth_basic "Área restringida";
+                auth_basic_user_file /etc/nginx/.htpasswd;
+                try_files $uri $uri/ =404;
+        }
+}
+```
+
+`cat /etc/nginx/sites-available/perfect_learn`
+
+`sudo systemctl restart nginx`
+
+Si se cancela la autentificación, muestra el error `401 Authorization Required`.
+
+
+access.log  
+error.log

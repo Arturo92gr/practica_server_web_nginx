@@ -32,15 +32,25 @@ Vagrant.configure("2") do |config|
     chmod 755 /etc/ssl/private
     systemctl restart vsftpd
   SHELL
-  # Una vez se haya transferido el contenido del sitio web al servidor mediante FTPES, se podrá hacer la siguiente provisión:
+  # Una vez se haya transferido el contenido del sitio web al servidor mediante FTPES, se podrán hacer las siguientes provisiones:
   config.vm.provision "shell", name: "foo_fighters", run: "never", inline: <<-SHELL
     rm /etc/nginx/sites-enabled/nginx_server
     mkdir -p /var/www/foo_fighters/html
-    cp -r /home/vagrant/ftp/* /var/www/foo_fighters/html
+    cp -r /home/vagrant/ftp/foo_fighters /var/www/foo_fighters/html
     chown -R www-data:www-data /var/www/foo_fighters/html
     chmod -R 755 /var/www/foo_fighters
     cp -v /vagrant/foo_fighters /etc/nginx/sites-available/
     ln -s /etc/nginx/sites-available/foo_fighters /etc/nginx/sites-enabled/
+    systemctl restart nginx
+  SHELL
+  config.vm.provision "shell", name: "perfect_learn", run: "never", inline: <<-SHELL
+    rm /etc/nginx/sites-enabled/*
+    mkdir -p /var/www/perfect_learn/html
+    cp -r /home/vagrant/ftp/perfect_learn /var/www/perfect_learn/html
+    chown -R www-data:www-data /var/www/perfect_learn/html
+    chmod -R 755 /var/www/perfect_learn
+    cp -v /vagrant/perfect_learn /etc/nginx/sites-available/
+    ln -s /etc/nginx/sites-available/perfect_learn /etc/nginx/sites-enabled/
     systemctl restart nginx
   SHELL
 end
