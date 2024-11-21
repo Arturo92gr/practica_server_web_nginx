@@ -241,9 +241,34 @@ Si se cancela la autentificación, muestra el error `401 Authorization Required`
 
 <br>
 
+#### Ficheros error.log y access.log
+
 En `error.log` quedan registrados los accesos erróneos junto a la causa, como *user not found* o *password mismatch*, y demás información.  
 En `access.log` se registran todos los accesos, tanto erróneos como exitosos, junto a un código numérico.
 - *200* para accesos exitosos.
 - *401* para intentos fallidos.
 
 <img src="./htdocs/8.png">
+
+#### Acceso restringido a la sección Contact
+
+Se vuelve a editar el archivo *perfect_learn* de *sites-available*.
+
+```bash
+server {
+	listen 80;
+	listen [::]:80;
+	root /var/www/perfect_learn/html/perfect_learn;
+	index index.html index.htm index.nginx-debian.html;
+	server_name perfect_learn;
+	location / {
+		try_files $uri $uri/ =404;
+	}
+	location = /contact.html {
+		auth_basic "Área restringida";
+		auth_basic_user_file /etc/nginx/.htpasswd;
+	}
+}
+```
+
+<img src="./htdocs/9.png">
