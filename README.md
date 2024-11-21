@@ -7,7 +7,11 @@
 - [FTP](#ftp)
 - [Conectar mediant FTPES y transferir archivos](#conectar-mediant-ftpes-y-transferir-archivos)
 - [Cuestiones finales](#cuestiones-finales)
-- [Autentificación](#autentificación)
+- [Autentificación](#autentificación)  
+        - [Tarea 2.1. - Ficheros error.log y access.log](#tarea-21---ficheros-errorlog-y-accesslog)  
+        - [Tarea 2.2. - Acceso restringido a la sección Contact](#tarea-22---acceso-restringido-a-la-sección-contact)  
+        - [Tarea 3.1. - Restricción de IP](#tarea-31---restricción-de-ip)  
+        - [Tarea 3.2. - Doble autenticación, IP y usuario](#tarea-32---doble-autenticación-ip-y-usuario)  
 
 <br>
 
@@ -152,7 +156,7 @@ Tras esto, se vuelven a realizar todos los pasos que se han llevado a cabo inici
 
 <br>
 
-Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina virtual a nginx_server.  
+Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina virtual a *foo_fighters.es*.  
     En Windows está en el siguiente directorio:  
     `C:\Windows\System32\drivers\etc\hosts`  
     Se cambia la asociación inicial:  
@@ -189,7 +193,13 @@ Por otro lado, también son necesarios permisos de ejecución (x) en directorios
 
 ## Autentificación
 
+### Comienzo
+
+Primeramente se raliza la comprobación del paquete de herramientas de openssl:
+
 `dpkg -l | grep openssl`
+
+A continuación se crea el archivo *.htpasswd* en */etc/nginx* para guardar los usuarios y contraseñas:
 
 ```bash
 sudo sh -c "echo -n 'nombre:' >> /etc/nginx/.htpasswd"
@@ -198,6 +208,8 @@ sudo sh -c "openssl passwd -apr1 >> /etc/nginx/.htpasswd"
 
 cat /etc/nginx/.htpasswd
 ```
+
+Ahora se edita la información del *server block* de la web para aplicar las restricciones:
 
 `sudo nano /etc/nginx/sites-available/perfect_learn`
 
@@ -216,11 +228,11 @@ server {
 }
 ```
 
-`cat /etc/nginx/sites-available/perfect_learn`
+Por último se reinicia el servicio para aplicar los cambios:
 
 `sudo systemctl restart nginx`
 
-Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina virtual a nginx_server.  
+Para comprobar la nueva configuración, se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina virtual a *perfect_learn.com*.  
     En Windows está en el siguiente directorio:  
     `C:\Windows\System32\drivers\etc\hosts`  
     Se cambia la asociación inicial:  
@@ -241,18 +253,24 @@ Si se cancela la autentificación, muestra el error `401 Authorization Required`
 
 <br>
 
-#### Ficheros error.log y access.log
+### Tarea 2.1. - Ficheros error.log y access.log
+
+Dentro del directorio */var/log/nginx/*: 
 
 En `error.log` quedan registrados los accesos erróneos junto a la causa, como *user not found* o *password mismatch*, y demás información.  
-En `access.log` se registran todos los accesos, tanto erróneos como exitosos, junto a un código numérico.
-- *200* para accesos exitosos.
+
+En `access.log` se registran todos los accesos, tanto erróneos como exitosos, junto a un código numérico:
+- *200* para accesos exitosos.  
 - *401* para intentos fallidos.
+
+Para filtrar el resultado y ver solo los intentos de acceso al directorio raíz, se puede utilizar el siguiente comando:  
+`cat /var/log/nginx/access.log | grep 'GET / HTTP'`
 
 <img src="./htdocs/8.png">
 
-#### Acceso restringido a la sección Contact
+### Tarea 2.2. - Acceso restringido a la sección Contact
 
-Se vuelve a editar el archivo *perfect_learn* de *sites-available*.
+Se vuelve a editar el archivo *perfect_learn* de */etc/nginx/sites-available*, esta vez añadiendo la localización de la sección contact para la autenticación.
 
 ```bash
 server {
@@ -272,3 +290,63 @@ server {
 ```
 
 <img src="./htdocs/9.png">
+
+### Tarea 3.1. - Restricción de IP
+
+Se configura Nginx para que no deje acceder con la IP de la máquina anfitriona al directorio raíz de la web, para ello se edita nuevamente su *server block*:  
+`sudo nano /etc/nginx/sites-available/perfect_learn`
+
+Se añade la restricción mediante *deny* junto a la IP especificada y se permiten el resto mediante *allow all*:
+
+```bash
+server {
+	listen 80;
+	listen [::]:80;
+	root /var/www/perfect_learn/html/perfect_learn;
+	index index.html index.htm index.nginx-debian.html;
+	server_name perfect_learn;
+	location / {
+		deny 192.168.0.1;
+		allow all;
+		try_files $uri $uri/ =404;
+	}
+}
+```
+
+Página de error del navegador al acceder desde la IP no autorizada:
+
+<img src="./htdocs/10.png">
+
+Mensaje de error de *error.log*:  
+`access forbidden by rule`
+
+<img src="./htdocs/11.png">
+
+### Tarea 3.2. - Doble autenticación, IP y usuario
+
+Se configura Nginx para que desde la máquina anfitriona se tenga que tener tanto una IP válida como un usuario válido para poder acceder.
+
+Nuevamente, se modifica el *server block* para incorporar las nuevas restricciones de IP y usuario a la vez:
+
+```bash
+server {
+	listen 80;
+	listen [::]:80;
+	root /var/www/perfect_learn/html/perfect_learn;
+	index index.html index.htm index.nginx-debian.html;
+	server_name perfect_learn;
+	location / {
+		allow 192.168.0.1;
+		deny all;
+
+		auth_basic "Área restringida";
+		auth_basic_user_file /etc/nginx/.htpasswd;
+		
+		try_files $uri $uri/ =404;
+	}
+}
+```
+
+Como se puede ver en los registros log, se ha podido acceder sin problema desde la máquina anfitriona con los dos usuarios, *arturo* y *cardenas*:
+
+<img src="./htdocs/12.png">

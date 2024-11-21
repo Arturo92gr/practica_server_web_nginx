@@ -5,12 +5,8 @@ server {
 	index index.html index.htm index.nginx-debian.html;
 	server_name perfect_learn;
 	location / {
-		allow 192.168.0.1;
-		deny all;
-
-		auth_basic "Área restringida";
-		auth_basic_user_file /etc/nginx/.htpasswd;
-		
+		deny 192.168.0.1;
+		allow all;
 		try_files $uri $uri/ =404;
 	}
 }
