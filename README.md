@@ -156,7 +156,7 @@ Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina vi
     En Windows está en el siguiente directorio:  
     `C:\Windows\System32\drivers\etc\hosts`  
     Se cambia la asociación inicial:  
-    `192.168.0.2 foo_fighters`
+    `192.168.0.2 foo_fighters.es`
 
 <br>
 
@@ -220,8 +220,30 @@ server {
 
 `sudo systemctl restart nginx`
 
+Se vuelve a editar el archivo /etc/hosts para que asocie la IP de la máquina virtual a nginx_server.  
+    En Windows está en el siguiente directorio:  
+    `C:\Windows\System32\drivers\etc\hosts`  
+    Se cambia la asociación inicial:  
+    `192.168.0.2 perfect_learn.com`
+
+<img src="./htdocs/5.png">
+
+<br>
+
+<img src="./htdocs/6.png">
+
+<br>
+
+Si se introducen mal las credenciales, volverá a pedirlas.  
 Si se cancela la autentificación, muestra el error `401 Authorization Required`.
 
+<img src="./htdocs/7.png">
 
-access.log  
-error.log
+<br>
+
+En `error.log` quedan registrados los accesos erróneos junto a la causa, como *user not found* o *password mismatch*, y demás información.  
+En `access.log` se registran todos los accesos, tanto erróneos como exitosos, junto a un código numérico.
+- *200* para accesos exitosos.
+- *401* para intentos fallidos.
+
+<img src="./htdocs/8.png">
