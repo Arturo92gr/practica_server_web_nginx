@@ -49,6 +49,8 @@ Vagrant.configure("2") do |config|
     cp -r /home/vagrant/ftp/perfect_learn /var/www/perfect_learn/html
     chown -R www-data:www-data /var/www/perfect_learn/html
     chmod -R 755 /var/www/perfect_learn
+    # En la sigueinte línea se crea un usuario de prueba junto a su contraseña
+    sh -c "echo 'usuario_test:$(echo usuario_test | openssl passwd -apr1 -stdin)' >> /etc/nginx/.htpasswd"
     cp -v /vagrant/perfect_learn /etc/nginx/sites-available/
     ln -s /etc/nginx/sites-available/perfect_learn /etc/nginx/sites-enabled/
     systemctl restart nginx
