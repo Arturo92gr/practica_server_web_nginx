@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
   SHELL
   # Una vez se haya transferido el contenido del sitio web al servidor mediante FTPES, se podrán hacer las siguientes provisiones:
   config.vm.provision "shell", name: "foo_fighters", run: "never", inline: <<-SHELL
-    rm /etc/nginx/sites-enabled/nginx_server
+    rm /etc/nginx/sites-enabled/*
     mkdir -p /var/www/foo_fighters/html
     cp -r /home/vagrant/ftp/foo_fighters /var/www/foo_fighters/html
     chown -R www-data:www-data /var/www/foo_fighters/html
@@ -51,6 +51,16 @@ Vagrant.configure("2") do |config|
     chmod -R 755 /var/www/perfect_learn
     cp -v /vagrant/perfect_learn /etc/nginx/sites-available/
     ln -s /etc/nginx/sites-available/perfect_learn /etc/nginx/sites-enabled/
+    systemctl restart nginx
+  SHELL
+  config.vm.provision "shell", name: "example", run: "never", inline: <<-SHELL
+    rm /etc/nginx/sites-enabled/*
+    mkdir -p /var/www/example/html
+    cp -r /home/vagrant/ftp/example/* /var/www/example/html
+    chown -R www-data:www-data /var/www/example/html
+    chmod -R 755 /var/www/example
+    cp -v /vagrant/example.com /etc/nginx/sites-available/
+    ln -s /etc/nginx/sites-available/example /etc/nginx/sites-enabled/
     systemctl restart nginx
   SHELL
 end

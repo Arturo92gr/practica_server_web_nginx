@@ -350,3 +350,118 @@ server {
 Como se puede ver en los registros log, se ha podido acceder sin problema desde la máquina anfitriona con los dos usuarios, *arturo* y *cardenas*:
 
 <img src="./htdocs/12.png">
+
+## Acceso seguro
+
+### Comienzo
+
+Se crea el fichero *example.com*:  
+`sudo nano /etc/nginx/sites-available/example.com`
+
+Se especifica el *root* y el *server_name* para el nuevo sitio web *example.com*:  
+```bash
+server {
+        listen 80;
+        listen [::]:80;
+        root /var/www/example/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name example.com www.example.com;
+        location / {
+                try_files $uri $uri/ =404;
+        }
+}
+```
+
+Se comprueba que no hay errores de sintaxis:  
+`sudo nginx -t`
+
+Se reinicia el servicio:  
+`sudo systemctl reload nginx`
+
+<br>
+
+### Configuración del cortafuegos
+
+Se usará *ufw*:  
+`sudo apt install ufw`
+
+Se comprueba el estado del cortafuegos:  
+`sudo ufw status`  
+Inicialmente, estará inactivo.
+
+Se activa el perfil para permitir el tráfico *HTTPS*:  
+```bash
+sudo ufw allow ssh
+
+sudo ufw allow 'Nginx Full'
+
+sudo ufw delete allow 'Nginx HTTP'
+```
+
+Se vuelve a comprobar el estatus para ver los cambios y cerciorarse de que es correcto.  
+`sudo ufw status`  
+Debe quedar así:  
+```bash
+Status: active
+To Action From
+-- ------ ----
+Nginx Full ALLOW Anywhere
+Nginx Full (v6) ALLOW Anywhere(v6)
+```
+
+Se activa el cortafuegos:
+`sudo ufw --force enable`
+
+<img src="./htdocs/13.png">
+
+### Generar certificado autofirmado
+
+Se crea la *clave SSL* y el *certificado* con el sigueinte comando de *openssl*:
+```bash
+sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/example.com.key -out /etc/ssl/certs/example.com.crt
+```
+
+El comando devolverá lo siguiente:
+
+<img src="./htdocs/14.png">
+
+### Configuración
+
+Se añade el uso del certificado al archivo `/etc/nginx/sites-available/example.com`:
+
+```bash
+server {
+        listen 80;
+        listen 443 ssl;
+        root /var/www/example/html/example;
+        index index.html index.htm index.nginx-debian.html;
+        server_name example.com www.example.com;
+        ssl_certificate /etc/ssl/certs/example.com.crt;
+        ssl_certificate_key /etc/ssl/private/example.com.key;
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+        ssl_ciphers HIGH:!aNULL:!MD5;
+
+        location / {
+        try_files $uri $uri/ =404;
+        }
+}
+```
+
+Se comprueba la configuración y se recarga el servicio:
+```bash
+sudo nginx -t
+
+sudo systemctl reload nginx
+```
+
+### Comprobación
+
+Se dita el archivo */etc/hosts* para que asocie la IP de la máquina virtual a *example.com*.  
+    En Windows está en el siguiente directorio:  
+    `C:\Windows\System32\drivers\etc\hosts`  
+    Se cambia la asociación inicial:  
+    `192.168.0.2 example.com`
+
+Comprobación de acceso a la web:
+
+<img src="./htdocs/11.png">

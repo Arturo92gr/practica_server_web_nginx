@@ -1,7 +1,7 @@
 server {
     listen 80;
     listen [::]:80;
-    root /var/www/foo_fighters/html;
+    root /var/www/foo_fighters/html/foo_fighters;
     index index.html index.htm index.nginx-debian.html;
     server_name foo_fighters;
     location / {
