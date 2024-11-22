@@ -1,7 +1,7 @@
 server {
         listen 80;
         listen 443 ssl;
-        root /var/www/example/html/example;
+        root /var/www/example.com/html;
         index index.html index.htm index.nginx-debian.html;
         server_name example.com www.example.com;
         ssl_certificate /etc/ssl/certs/example.com.crt;

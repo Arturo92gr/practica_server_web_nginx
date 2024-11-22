@@ -12,6 +12,11 @@
         - [Tarea 2.2. - Acceso restringido a la sección Contact](#tarea-22---acceso-restringido-a-la-sección-contact)  
         - [Tarea 3.1. - Restricción de IP](#tarea-31---restricción-de-ip)  
         - [Tarea 3.2. - Doble autenticación, IP y usuario](#tarea-32---doble-autenticación-ip-y-usuario)  
+- [Acceso seguro](#acceso-seguro)  
+        - [Configuración del cortafuegos](#configuración-del-cortafuegos)  
+        - [Generar certificado autofirmado](#generar-certificado-autofirmado)  
+        - [Configuración](#configuración)  
+        - [Comprobación](#comprobación)  
 
 <br>
 
@@ -21,6 +26,12 @@ Al ejecutar `vagrant up` con el Vagrantfile que se está suministrando en este r
 Una vez transferido el contenido del sitio web al servidor, se podrá ejecutar esa provisión específica:
 
         vagrant provision --provision-with nombreProvision
+Provisiones disponibles según orden de uso en las prácticas:
+- foo_fighters
+- perfect_learn
+- example
+- ufw
+- example_openssl
 
 <br>
 
@@ -242,6 +253,10 @@ Para comprobar la nueva configuración, se vuelve a editar el archivo /etc/hosts
 
 <br>
 
+<img src="./htdocs/5.2.png">
+
+<br>
+
 <img src="./htdocs/6.png">
 
 <br>
@@ -351,9 +366,18 @@ Como se puede ver en los registros log, se ha podido acceder sin problema desde 
 
 <img src="./htdocs/12.png">
 
+<br>
+
 ## Acceso seguro
 
 ### Comienzo
+
+Inicialmente se crea el directorio para alojar el sitio web *example* y se copia dicho sitio desde la carpeta ftp:
+```bash
+sudo mkdir -p /var/www/example.com/html
+
+sudo cp -r /home/vagrant/ftp/example/* /var/www/example.com/html
+```
 
 Se crea el fichero *example.com*:  
 `sudo nano /etc/nginx/sites-available/example.com`
@@ -400,19 +424,13 @@ sudo ufw delete allow 'Nginx HTTP'
 
 Se vuelve a comprobar el estatus para ver los cambios y cerciorarse de que es correcto.  
 `sudo ufw status`  
-Debe quedar así:  
-```bash
-Status: active
-To Action From
--- ------ ----
-Nginx Full ALLOW Anywhere
-Nginx Full (v6) ALLOW Anywhere(v6)
-```
 
-Se activa el cortafuegos:
+Se activa el cortafuegos:  
 `sudo ufw --force enable`
 
 <img src="./htdocs/13.png">
+
+<br>
 
 ### Generar certificado autofirmado
 
@@ -454,6 +472,8 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
+<br>
+
 ### Comprobación
 
 Se dita el archivo */etc/hosts* para que asocie la IP de la máquina virtual a *example.com*.  
@@ -464,4 +484,8 @@ Se dita el archivo */etc/hosts* para que asocie la IP de la máquina virtual a *
 
 Comprobación de acceso a la web:
 
-<img src="./htdocs/11.png">
+<img src="./htdocs/15.png">
+
+<br>
+
+<img src="./htdocs/16.png">
